@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
+@NoArgsConstructor
 @Data
 @Entity
 public class User {
