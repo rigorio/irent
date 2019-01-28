@@ -46,12 +46,11 @@ public class UserController {
     String name = (String) details.get("name");
     String password = (String) details.get("password");
     String[] contacts = (String[]) details.get("contacts");
-    User user = User.builder()
-        .email(email)
-        .name(name)
-        .password(password)
-        .contacts(contacts)
-        .build();
+    User user = new User();
+    user.setEmail(email);
+    user.setName(name);
+    user.setPassword(password);
+    user.setContacts(contacts);
     return new ResponseEntity<>(userRepository.save(user), HttpStatus.OK);
   }
 

@@ -6,7 +6,6 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Builder
 public class User {
 
   @Id
