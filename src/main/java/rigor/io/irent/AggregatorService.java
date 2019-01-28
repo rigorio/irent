@@ -42,7 +42,7 @@ public class AggregatorService {
 
   public User getByHouseId(Long id) {
     Optional<HouseUser> byHouseId = houseUserRepository.findByHouseId(id);
-    return userRepository.findById(byHouseId.get().getUserId()).orElse(new User());
+    return userRepository.findById(byHouseId.get().getUserId()).orElse(User.builder().build());
   }
 
 

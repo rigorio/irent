@@ -9,7 +9,6 @@ import javax.persistence.*;
 @ToString
 @Entity
 @Builder
-@AllArgsConstructor
 public class User {
 
   @Id
@@ -21,13 +20,4 @@ public class User {
   private String password;
   private String[] contacts;
 
-  public User(String email, String name, String password, String[] contacts) {
-    this.email = email;
-    this.name = name;
-    this.password = password;
-    this.contacts = contacts;
-  }
-
-  public User() {
-  }
 }
