@@ -8,6 +8,7 @@ import rigor.io.irent.AggregatorService;
 import rigor.io.irent.joined.HouseUser;
 import rigor.io.irent.joined.HouseUserRepository;
 import rigor.io.irent.token.TokenService;
+import rigor.io.irent.user.User;
 import rigor.io.irent.user.UserRepository;
 
 import java.io.IOException;
