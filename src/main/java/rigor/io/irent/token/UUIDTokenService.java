@@ -1,7 +1,6 @@
 package rigor.io.irent.token;
 
 import org.springframework.stereotype.Service;
-import rigor.io.irent.user.User;
 
 import java.util.HashMap;
 import java.util.Map;

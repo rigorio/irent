@@ -5,7 +5,6 @@ import rigor.io.irent.joined.HouseUser;
 import rigor.io.irent.joined.HouseUserRepository;
 import rigor.io.irent.house.House;
 import rigor.io.irent.house.HouseRepository;
-import rigor.io.irent.user.User;
 import rigor.io.irent.user.UserRepository;
 
 import java.util.*;
