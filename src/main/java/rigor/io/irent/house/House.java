@@ -17,12 +17,12 @@ public class House {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
+  private String coverPic;
   private String[] pics;
   private String title;
   private Long price;
   private String description;
   private Integer slots;
-  private Integer vacant;
   private Integer[] reviews;
 
 
