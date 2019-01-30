@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rigor.io.irent.AggregatorService;
+import rigor.io.irent.ReservationService;
 import rigor.io.irent.joined.HouseUser;
 import rigor.io.irent.joined.HouseUserRepository;
 import rigor.io.irent.token.TokenService;
@@ -27,15 +27,15 @@ public class HouseController {
   private UserRepository userRepository;
   private HouseUserRepository houseUserRepository;
   private TokenService tokenService;
-  private AggregatorService aggregatorService;
+  private ReservationService reservationService;
   private ObjectMapper objectMapper = new ObjectMapper();
 
-  public HouseController(HouseRepository houseRepository, UserRepository userRepository, HouseUserRepository houseUserRepository, TokenService tokenService, AggregatorService aggregatorService) {
+  public HouseController(HouseRepository houseRepository, UserRepository userRepository, HouseUserRepository houseUserRepository, TokenService tokenService, ReservationService reservationService) {
     this.houseRepository = houseRepository;
     this.userRepository = userRepository;
     this.houseUserRepository = houseUserRepository;
     this.tokenService = tokenService;
-    this.aggregatorService = aggregatorService;
+    this.reservationService = reservationService;
   }
 
   @GetMapping("/houses")
