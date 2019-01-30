@@ -12,6 +12,7 @@ import rigor.io.irent.user.User;
 import rigor.io.irent.user.UserRepository;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,12 +40,13 @@ public class HouseController {
 
   @GetMapping("/houses")
   public ResponseEntity<?> getAllHouses() {
-    return new ResponseEntity<>(houseRepository.findAll(), HttpStatus.OK);
+    return new ResponseEntity<>(createMap("Success", houseRepository.findAll()), HttpStatus.OK);
   }
 
   @GetMapping("/houses/{id}")
   public ResponseEntity<?> getHouseById(@PathVariable Long id) {
-    return new ResponseEntity<>(houseRepository.findById(id).orElse(new House()), HttpStatus.OK);
+    House house = houseRepository.findById(id).orElse(new House());
+    return new ResponseEntity<>(createMap("Success", house), HttpStatus.OK);
   }
 
 //  @GetMapping("/users")
@@ -52,7 +54,8 @@ public class HouseController {
   @GetMapping("/houses/{id}/user")
   public ResponseEntity<?> findUserByHouse(@PathVariable Long id) {
     Optional<HouseUser> byHouseId = houseUserRepository.findByHouseId(id);
-    return new ResponseEntity<>(userRepository.findById(byHouseId.get().getUserId()), HttpStatus.OK);
+    Optional<User> user = userRepository.findById(byHouseId.get().getUserId());
+    return new ResponseEntity<>(createMap("Success", user.get()), HttpStatus.OK);
   }
 
   @GetMapping("/account/houses")
@@ -68,7 +71,7 @@ public class HouseController {
     List<House> houses = houseUsers.stream()
         .map(houseUser -> allHouses.stream().filter(house -> house.getId().equals(houseUser.getHouseId())).findAny().orElse(new House()))
         .collect(Collectors.toList());
-    return new ResponseEntity<>(houses, HttpStatus.OK);
+    return new ResponseEntity<>(createMap("Success", houses), HttpStatus.OK);
   }
 
   @PostMapping("/houses")
@@ -79,7 +82,7 @@ public class HouseController {
     User user = tokenService.fetchUser(token);
     House h = houseRepository.save(house);
     HouseUser savedHouseUser = houseUserRepository.save(new HouseUser(user.getId(), h.getId()));
-    return new ResponseEntity<>(h, HttpStatus.OK);
+    return new ResponseEntity<>(createMap("Success", "Successfully added rental"), HttpStatus.OK);
   }
 
   @DeleteMapping("/houses/{id}")
@@ -94,9 +97,23 @@ public class HouseController {
   }
 
   @PutMapping("/houses")
-  public ResponseEntity<?> editHouse(@RequestBody Map<String, Object> data) throws IOException {
+  public ResponseEntity<?> editHouse(@RequestParam(required = false) String token, @RequestBody Map<String, Object> data) throws IOException {
+    if (!tokenService.isValid(token))
+      return null;
+
     House house = objectMapper.readValue(objectMapper.writeValueAsString(data), House.class);
-    return new ResponseEntity<>(houseRepository.save(house), HttpStatus.OK);
+    House h = houseRepository.save(house);
+    return new ResponseEntity<>(createMap("Success", h), HttpStatus.OK);
+  }
+
+
+
+
+  private HashMap<String, Object> createMap(String status, Object message) {
+    return new HashMap<String ,Object>(){{
+      put("status", status);
+      put("message", message);
+    }};
   }
 
 

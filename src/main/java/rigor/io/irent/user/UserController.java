@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import rigor.io.irent.token.TokenService;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,7 +23,17 @@ public class UserController {
     this.userRepository = userRepository;
   }
 
-  @GetMapping("/login")
+  @GetMapping("/id")
+  public ResponseEntity<?> getUserId
+      (@RequestParam(required = false) String token) {
+    if (!tokenService.isValid(token))
+      return null;
+    Long id = tokenService.fetchUser(token).getId();
+
+    return new ResponseEntity<>(createMap("Success", id), HttpStatus.OK);
+  }
+
+  @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
     if (credentials.get("email") == null && credentials.get("password") == null)
       return null;
@@ -30,13 +41,10 @@ public class UserController {
     String email = credentials.get("email");
     String password = credentials.get("password");
     Optional<User> user = userRepository.findByEmailAndPassword(email, password);
+    String token = tokenService.createToken(user.get());
 
     return user.isPresent()
-        ? new ResponseEntity<>(
-        new HashMap<String, String>() {{
-          put("status", "Logged In");
-          put("message", tokenService.createToken(user.get()));
-        }}, HttpStatus.OK)
+        ? new ResponseEntity<>(createMap("Success", token), HttpStatus.OK)
         : null;
   }
 
@@ -45,13 +53,14 @@ public class UserController {
     String email = (String) details.get("email");
     String name = (String) details.get("name");
     String password = (String) details.get("password");
-    String[] contacts = (String[]) details.get("contacts");
+    List<String> contacts = (List) details.get("contacts");
     User user = new User();
     user.setEmail(email);
     user.setName(name);
     user.setPassword(password);
-    user.setContacts(contacts);
-    return new ResponseEntity<>(userRepository.save(user), HttpStatus.OK);
+    user.setContacts(contacts.toArray(new String[0]));
+    User save = userRepository.save(user);
+    return new ResponseEntity<>(createMap("Success", save), HttpStatus.OK);
   }
 
   @GetMapping("/logout")
@@ -62,6 +71,14 @@ public class UserController {
     tokenService.delete(token);
 
     return new ResponseEntity<>("bye", HttpStatus.OK);
+  }
+
+
+  private HashMap<String, Object> createMap(String status, Object message) {
+    return new HashMap<String, Object>() {{
+      put("status", status);
+      put("message", message);
+    }};
   }
 
 
