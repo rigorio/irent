@@ -61,7 +61,7 @@ public class HouseController {
   @GetMapping("/account/houses")
   public ResponseEntity<?> findHousesByUser(@RequestParam(required = false) String token) {
     if (!tokenService.isValid(token))
-      return null;
+      return new ResponseEntity<>(createMap("Failed", "Error occured for " + token), HttpStatus.OK);
 
     User user = tokenService.fetchUser(token);
     List<HouseUser> houseUsers = houseUserRepository.findByUserId(user.getId());
@@ -77,7 +77,7 @@ public class HouseController {
   @PostMapping("/houses")
   public ResponseEntity<?> addHouse(@RequestParam(required = false) String token, @RequestBody House house) {
     if (!tokenService.isValid(token))
-      return null;
+      return new ResponseEntity<>(createMap("Failed", "Error occured for " + token), HttpStatus.OK);
 
     User user = tokenService.fetchUser(token);
     House h = houseRepository.save(house);
@@ -89,7 +89,7 @@ public class HouseController {
   public ResponseEntity<?> deleteHouse(@PathVariable Long id,
                                        @RequestParam(required = false) String token) {
     if (!tokenService.isValid(token))
-      return null;
+      return new ResponseEntity<>(createMap("Failed", "Error occured for " + token), HttpStatus.OK);
 
     houseRepository.deleteById(id);
     houseUserRepository.deleteByHouseId(id);
@@ -99,7 +99,7 @@ public class HouseController {
   @PutMapping("/houses")
   public ResponseEntity<?> editHouse(@RequestParam(required = false) String token, @RequestBody Map<String, Object> data) throws IOException {
     if (!tokenService.isValid(token))
-      return null;
+      return new ResponseEntity<>(createMap("Failed", "Error occured for " + token), HttpStatus.OK);
 
     House house = objectMapper.readValue(objectMapper.writeValueAsString(data), House.class);
     House h = houseRepository.save(house);

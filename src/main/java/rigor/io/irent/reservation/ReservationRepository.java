@@ -8,5 +8,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
   List<Reservation> findByHouseId(Long houseId);
   List<Reservation> findByUserId(Long userId);
+  void deleteByUserIdAndHouseId(Long userId, Long houseId);
 
 }

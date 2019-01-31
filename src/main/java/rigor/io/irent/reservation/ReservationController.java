@@ -10,6 +10,7 @@ import rigor.io.irent.user.User;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -28,34 +29,38 @@ public class ReservationController {
 
   @PostMapping("/reservations")
   public ResponseEntity<?> createReservation(@RequestParam(required = false) String token,
-                                             @RequestBody Long houseId) {
+                                             @RequestBody Map<String, Object> request) {
     if (!tokenService.isValid(token))
-      return null;
+      return new ResponseEntity<>(createMap("Failed", "Error occured for " + token), HttpStatus.OK);
 
     User user = tokenService.fetchUser(token);
-    reservationService.reserve(user.getId(), houseId);
+    request.put("userId", user.getId());
+    Reservation reserve = reservationService.reserve(request);
+//    reservationService.reserve(user.getId(), houseId);
 
     return new ResponseEntity<>(createMap("Created", "Reservation was saved"), HttpStatus.OK);
   }
 
-  @GetMapping("/reservations/users/{id}")
-  public ResponseEntity<?> getUsersByHouse(@RequestParam(required = false) String token,
-                                           @PathVariable Long id) {
+  @GetMapping("/reservations/users/{houseId}")
+  public ResponseEntity<?> getReservationsByHouse(@RequestParam(required = false) String token,
+                                                  @PathVariable Long houseId) {
     if (!tokenService.isValid(token))
-      return null;
+      return new ResponseEntity<>(createMap("Failed", "Error occured for " + token), HttpStatus.OK);
 
-    List<User> inquirers = reservationService.getInquirers(id);
+//    List<Reservation> reservations = reservationRepository.findByHouseId(id);
+    List<Reservation> inquirers = reservationService.getInquirers(houseId);
 
     return new ResponseEntity<>(createMap("Success", inquirers), HttpStatus.OK);
   }
 
-  @GetMapping("/reservations/houses/{id}")
-  public ResponseEntity<?> getHousesByUser(@RequestParam(required = false) String token,
-                                           @PathVariable Long id) {
+  @GetMapping("/reservations/houses")
+  public ResponseEntity<?> getReservationsByUser(@RequestParam(required = false) String token) {
     if (!tokenService.isValid(token))
-      return null;
+      return new ResponseEntity<>(createMap("Failed", "Error occured for " + token), HttpStatus.OK);
 
-    List<House> reservations = reservationService.getReservations(id);
+    User user = tokenService.fetchUser(token);
+
+    List<Reservation> reservations = reservationService.getReservations(user.getId());
 
     return new ResponseEntity<>(createMap("Success", reservations), HttpStatus.OK);
   }
@@ -64,9 +69,11 @@ public class ReservationController {
   public ResponseEntity<?> deleteReservation(@RequestParam(required = false) String token,
                                              @PathVariable Long id) {
     if (!tokenService.isValid(token))
-      return null;
+      return new ResponseEntity<>(createMap("Failed", "Error occured for " + token), HttpStatus.OK);
 
-    reservationRepository.deleteById(id);
+    User user = tokenService.fetchUser(token);
+
+    reservationRepository.deleteById(id); // TODO EHHH ??
 
     return new ResponseEntity<>(createMap("Deleted", "Reservation Cancelled!"), HttpStatus.OK);
   }

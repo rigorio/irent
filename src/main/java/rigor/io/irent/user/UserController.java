@@ -24,8 +24,7 @@ public class UserController {
   }
 
   @GetMapping("/id")
-  public ResponseEntity<?> getUserId
-      (@RequestParam(required = false) String token) {
+  public ResponseEntity<?> getUserId(@RequestParam(required = false) String token) {
     if (!tokenService.isValid(token))
       return null;
     Long id = tokenService.fetchUser(token).getId();
@@ -70,7 +69,7 @@ public class UserController {
 
     tokenService.delete(token);
 
-    return new ResponseEntity<>("bye", HttpStatus.OK);
+    return new ResponseEntity<>(createMap("Success", "Logged out"), HttpStatus.OK);
   }
 
 
