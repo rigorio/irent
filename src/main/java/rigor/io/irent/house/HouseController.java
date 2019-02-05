@@ -1,10 +1,13 @@
 package rigor.io.irent.house;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import rigor.io.irent.ReservationService;
+import rigor.io.irent.ResponseHub;
 import rigor.io.irent.joined.HouseUser;
 import rigor.io.irent.joined.HouseUserRepository;
 import rigor.io.irent.token.TokenService;
@@ -103,14 +106,12 @@ public class HouseController {
 
     House house = objectMapper.readValue(objectMapper.writeValueAsString(data), House.class);
     House h = houseRepository.save(house);
-    return new ResponseEntity<>(createMap("Success", h), HttpStatus.OK);
+    return new ResponseEntity<>(createMap("Success", "Details were saved"), HttpStatus.OK);
   }
 
 
-
-
   private HashMap<String, Object> createMap(String status, Object message) {
-    return new HashMap<String ,Object>(){{
+    return new HashMap<String, Object>() {{
       put("status", status);
       put("message", message);
     }};

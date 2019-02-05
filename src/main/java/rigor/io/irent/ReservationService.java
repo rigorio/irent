@@ -36,12 +36,12 @@ public class ReservationService {
     User user = userRepository.findById(userId).get();
     House house = houseRepository.findById(houseId).get();
     String coverPic = house.getCoverPic();
-    String[] pics = house.getPics();
     String title = house.getTitle();
     Long price = house.getPrice();
     String description = house.getDescription();
     Integer slots = house.getSlots();
     Integer[] reviews = house.getReviews();
+    String location = house.getLocation();
 
     Reservation reservation = Reservation.builder()
         .userId(userId)
@@ -53,8 +53,8 @@ public class ReservationService {
         .name(user.getName())
         .contacts(user.getContacts())
 
+        .location(location)
         .coverPic(coverPic)
-        .pics(pics)
         .title(title)
         .price(price)
         .description(description)
@@ -64,10 +64,6 @@ public class ReservationService {
     return reservationRepository.save(reservation);
   }
 
-  public void reserve(Long userId, Long houseId) {
-
-    reservationRepository.save(new Reservation(userId, houseId));
-  }
 
   public List<Reservation> getInquirers(Long houseId) {
     List<Reservation> reservations = reservationRepository.findByHouseId(houseId);

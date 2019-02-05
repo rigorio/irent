@@ -31,8 +31,8 @@ public class Reservation {
   private String name;
   private String[] contacts;
 
+  private String location;
   private String coverPic;
-  private String[] pics;
   private String title;
   private Long price;
   private String description;
