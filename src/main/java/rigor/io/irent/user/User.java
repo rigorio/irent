@@ -16,6 +16,15 @@ public class User {
   private String name;
   private String password;
   private String[] contacts;
+  private boolean verified;
+
+  public void setVerified(boolean verified) {
+    this.verified = verified;
+  }
+
+  public boolean isVerified() {
+    return verified;
+  }
 
   public User() {
   }

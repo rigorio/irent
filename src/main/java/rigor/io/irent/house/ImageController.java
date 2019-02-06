@@ -1,4 +1,4 @@
-package rigor.io.irent;
+package rigor.io.irent.house;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.http.HttpStatus;
