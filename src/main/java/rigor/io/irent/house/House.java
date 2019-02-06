@@ -24,7 +24,17 @@ public class House {
   @Nullable
   private String coverPic;
   private String title;
-  private String location;
+
+  private String propertyType;
+
+  private String[] amenities;
+
+  private String street;
+  private String city;
+  private String state;
+  private String country;
+
+
   private Long price;
   private String description;
   private Integer slots;

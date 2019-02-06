@@ -31,7 +31,15 @@ public class Reservation {
   private String name;
   private String[] contacts;
 
-  private String location;
+  private String propertyType;
+
+  private String[] amenities;
+
+  private String street;
+  private String city;
+  private String state;
+  private String country;
+
   private String coverPic;
   private String title;
   private Long price;

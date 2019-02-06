@@ -24,13 +24,13 @@ public class UserController {
     this.emailSender = emailSender;
   }
 
-  @GetMapping("/id")
+  @GetMapping("")
   public ResponseEntity<?> getUserId(@RequestParam(required = false) String token) {
     if (!tokenService.isValid(token))
       return new ResponseEntity<>(createMap("Failed", "failed"), HttpStatus.OK);
-    Long id = tokenService.fetchUser(token).getId();
+    User user = tokenService.fetchUser(token);
 
-    return new ResponseEntity<>(createMap("Success", id), HttpStatus.OK);
+    return new ResponseEntity<>(createMap("Success", user), HttpStatus.OK);
   }
 
   @PostMapping("/login")

@@ -2,8 +2,8 @@ package rigor.io.irent;
 
 import org.springframework.stereotype.Service;
 import rigor.io.irent.house.House;
-import rigor.io.irent.joined.HouseUserRepository;
 import rigor.io.irent.house.HouseRepository;
+import rigor.io.irent.joined.HouseUserRepository;
 import rigor.io.irent.reservation.Reservation;
 import rigor.io.irent.reservation.ReservationRepository;
 import rigor.io.irent.user.User;
@@ -33,6 +33,16 @@ public class ReservationService {
     String departure = String.valueOf(request.get("departure"));
     Long houseId = Long.parseLong(String.valueOf(request.get("houseId")));
     Long userId = Long.parseLong(String.valueOf(request.get("userId")));
+    String propertyType = String.valueOf(request.get("propertyType"));
+
+    String[] amenities = (String[]) request.get("amenities");
+
+    String street = (String) request.get("street");
+    String city = (String) request.get("city");
+    String state = (String) request.get("state");
+    String country = (String) request.get("country");
+
+
     User user = userRepository.findById(userId).get();
     House house = houseRepository.findById(houseId).get();
     String coverPic = house.getCoverPic();
@@ -41,7 +51,6 @@ public class ReservationService {
     String description = house.getDescription();
     Integer slots = house.getSlots();
     Integer[] reviews = house.getReviews();
-    String location = house.getLocation();
 
     Reservation reservation = Reservation.builder()
         .userId(userId)
@@ -53,7 +62,15 @@ public class ReservationService {
         .name(user.getName())
         .contacts(user.getContacts())
 
-        .location(location)
+        .propertyType(propertyType)
+
+        .amenities(amenities)
+
+        .street(street)
+        .city(city)
+        .state(state)
+        .country(country)
+
         .coverPic(coverPic)
         .title(title)
         .price(price)
