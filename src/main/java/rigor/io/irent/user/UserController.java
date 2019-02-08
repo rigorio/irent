@@ -3,6 +3,7 @@ package rigor.io.irent.user;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rigor.io.irent.ResponseMessage;
 import rigor.io.irent.token.TokenService;
 
 import javax.mail.MessagingException;
@@ -27,10 +28,10 @@ public class UserController {
   @GetMapping("")
   public ResponseEntity<?> getUserId(@RequestParam(required = false) String token) {
     if (!tokenService.isValid(token))
-      return new ResponseEntity<>(createMap("Failed", "failed"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Failed", "failed"), HttpStatus.OK);
     User user = tokenService.fetchUser(token);
 
-    return new ResponseEntity<>(createMap("Success", user), HttpStatus.OK);
+    return new ResponseEntity<>(new ResponseMessage("Success", user), HttpStatus.OK);
   }
 
   @PostMapping("/login")
@@ -38,24 +39,24 @@ public class UserController {
     String email = credentials.get("email");
     String password = credentials.get("password");
     if (email == null && password == null)
-      return new ResponseEntity<>(createMap("Failed", "Username or password cannot be empty"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Username or password cannot be empty"), HttpStatus.OK);
 
     if (!emailSender.isValid(email))
-      return new ResponseEntity<>(createMap("Failed", "Invalid email"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Invalid email"), HttpStatus.OK);
 
     Optional<User> user = userRepository.findByEmailAndPassword(email, password);
 
     if (!user.isPresent())
-      return new ResponseEntity<>(createMap("Failed", "Wrong email or password"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Wrong email or password"), HttpStatus.OK);
 
     User u = user.get();
 
     if (!u.isVerified())
-      return new ResponseEntity<>(createMap("Failed", "Please check your email to verify your account"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Please check your email to verify your account"), HttpStatus.OK);
 
     String token = tokenService.createToken(u);
 
-    return new ResponseEntity<>(createMap("Success", token), HttpStatus.OK);
+    return new ResponseEntity<>(new ResponseMessage("Success", token), HttpStatus.OK);
   }
 
   @PostMapping("/register")
@@ -66,10 +67,10 @@ public class UserController {
     List<String> contacts = (List) details.get("contacts");
 
     if (email == null && password == null)
-      return new ResponseEntity<>(createMap("Failed", "Username or password cannot be empty"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Username or password cannot be empty"), HttpStatus.OK);
 
     if (!emailSender.isValid(email))
-      return new ResponseEntity<>(createMap("Failed", "Invalid email"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Invalid email"), HttpStatus.OK);
 
     User user = new User();
     user.setEmail(email);
@@ -80,11 +81,11 @@ public class UserController {
 
     Optional<User> u = userRepository.findByEmail(user.getEmail());
     if (u.isPresent())
-      return new ResponseEntity<>(createMap("Failed", "Email is already taken"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Email is already taken"), HttpStatus.OK);
 
     emailSender.sendMail(user.getEmail());
     User save = userRepository.save(user);
-    return new ResponseEntity<>(createMap("Success", save), HttpStatus.OK);
+    return new ResponseEntity<>(new ResponseMessage("Success", save), HttpStatus.OK);
   }
 
   @PostMapping("")
@@ -92,7 +93,7 @@ public class UserController {
                                     @RequestBody Map<String, Object> data) {
 
     if (!tokenService.isValid(token))
-      return new ResponseEntity<>(createMap("Failed", "Not Authorized"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Not Authorized"), HttpStatus.OK);
 
     String name = (String) data.get("name");
     List<String> contacts = (List) data.get("contacts");
@@ -104,7 +105,7 @@ public class UserController {
 
     User u = userRepository.save(user);
 
-    return new ResponseEntity<>(createMap("Saved", u), HttpStatus.OK);
+    return new ResponseEntity<>(new ResponseMessage("Saved", u), HttpStatus.OK);
   }
 
   @GetMapping("/confirmation")
@@ -114,15 +115,15 @@ public class UserController {
     Optional<User> userCon = userRepository.findByEmail(email);
 
     if (!userCon.isPresent())
-      return new ResponseEntity<>(createMap("Failed", "There was a problem with your verification"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Failed", "There was a problem with your verification"), HttpStatus.OK);
 
     User user = userCon.get();
     if (user.isVerified())
-      return new ResponseEntity<>(createMap("Already Verified", "Email has already been verified"), HttpStatus.OK);
+      return new ResponseEntity<>(new ResponseMessage("Already Verified", "Email has already been verified"), HttpStatus.OK);
 
     user.setVerified(true);
     User u = userRepository.save(user);
-    return new ResponseEntity<>(createMap("Success", "User successfully verified. Please login to the app to use"), HttpStatus.OK);
+    return new ResponseEntity<>(new ResponseMessage("Success", "User successfully verified. Please login to the app to use"), HttpStatus.OK);
   }
 
   @GetMapping("/logout")
@@ -132,16 +133,10 @@ public class UserController {
 
     tokenService.delete(token);
 
-    return new ResponseEntity<>(createMap("Success", "Logged out"), HttpStatus.OK);
+    return new ResponseEntity<>(new ResponseMessage("Success", "Logged out"), HttpStatus.OK);
   }
 
 
-  private HashMap<String, Object> createMap(String status, Object message) {
-    return new HashMap<String, Object>() {{
-      put("status", status);
-      put("message", message);
-    }};
-  }
 
 
 }
