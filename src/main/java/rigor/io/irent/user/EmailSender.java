@@ -11,7 +11,7 @@ import java.util.Properties;
 public class EmailSender {
 
 
-  private String host = "http://localhost:8080";
+  private String host = "https://gentle-stream-26956.herokuapp.com";
   private String username = "irent.mcc.ph@gmail.com";
   private String password = "makapagal";
   private Properties props;
