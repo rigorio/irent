@@ -218,5 +218,5 @@ mvnw
 .mvn/^
 mvnw*
 .mvn/
-
+upload-dir
 # End of https://www.gitignore.io/api/java,maven,intellij,intellij+all,intellij+iml

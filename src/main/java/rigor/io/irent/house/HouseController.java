@@ -84,6 +84,7 @@ public class HouseController {
 
     User user = tokenService.fetchUser(token);
     House h = houseRepository.save(house);
+    System.out.println(h);
     HouseUser savedHouseUser = houseUserRepository.save(new HouseUser(user.getId(), h.getId()));
     return new ResponseEntity<>(createMap("Success", "Successfully added rental"), HttpStatus.OK);
   }
@@ -92,11 +93,11 @@ public class HouseController {
   public ResponseEntity<?> deleteHouse(@PathVariable Long id,
                                        @RequestParam(required = false) String token) {
     if (!tokenService.isValid(token))
-      return new ResponseEntity<>(createMap("Failed", "Error occured for " + token), HttpStatus.OK);
+      return new ResponseEntity<>(createMap("Failed", "Cannot be deleted"), HttpStatus.OK);
 
     houseRepository.deleteById(id);
     houseUserRepository.deleteByHouseId(id);
-    return new ResponseEntity<>("del", HttpStatus.OK);
+    return new ResponseEntity<>(createMap("Deleted", "Item Deleted"), HttpStatus.OK);
   }
 
   @PutMapping("/houses")

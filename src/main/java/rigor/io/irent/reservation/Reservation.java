@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import rigor.io.irent.house.House;
+import rigor.io.irent.user.User;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
 @Entity
@@ -43,9 +42,31 @@ public class Reservation {
   private String coverPic;
   private String title;
   private Long price;
+  @Column(columnDefinition = "CLOB")
   private String description;
   private Integer slots;
   private Integer[] reviews;
+
+  public Reservation(User user, House house, Stay stay) {
+    userId = user.getId();
+    houseId = house.getId();
+    arrival = stay.getArrival();
+    departure = stay.getDeparture();
+    name = user.getName();
+    contacts = user.getContacts();
+    propertyType = house.getPropertyType();
+    amenities = house.getAmenities();
+    street = house.getStreet();
+    city = house.getCity();
+    state = house.getState();
+    country = house.getCountry();
+    coverPic = house.getCoverPic();
+    title = house.getTitle();
+    price = house.getPrice();
+    description = house.getDescription();
+    slots = house.getSlots();
+    reviews = house.getReviews();
+  }
 
   public Reservation(Long userId, Long houseId) {
     this.userId = userId;

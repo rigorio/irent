@@ -23,6 +23,14 @@ public class UserController {
     this.tokenService = tokenService;
     this.userRepository = userRepository;
     this.emailSender = emailSender;
+    User user = User.builder()
+        .name("Rigo Sarmiento")
+        .contacts(new String[]{"rigosarmiento4@email", "09330930411", "09330920641"})
+        .verified(true)
+        .password("test")
+        .email("rigosarmiento4@gmail.com")
+        .build();
+    this.userRepository.save(user);
   }
 
   @GetMapping("")
@@ -72,12 +80,13 @@ public class UserController {
     if (!emailSender.isValid(email))
       return new ResponseEntity<>(new ResponseMessage("Failed", "Invalid email"), HttpStatus.OK);
 
-    User user = new User();
-    user.setEmail(email);
-    user.setName(name);
-    user.setPassword(password);
-    user.setContacts(contacts.toArray(new String[0]));
-    user.setVerified(false);
+    User user = User.builder()
+        .email(email)
+        .name(name)
+        .password(password)
+        .contacts(contacts.toArray(new String[0]))
+        .verified(false)
+        .build();
 
     Optional<User> u = userRepository.findByEmail(user.getEmail());
     if (u.isPresent())
@@ -90,7 +99,7 @@ public class UserController {
 
   @PostMapping("")
   public ResponseEntity<?> editUserDetails(@RequestParam(required = false) String token,
-                                    @RequestBody Map<String, Object> data) {
+                                           @RequestBody Map<String, Object> data) {
 
     if (!tokenService.isValid(token))
       return new ResponseEntity<>(new ResponseMessage("Failed", "Not Authorized"), HttpStatus.OK);
@@ -135,8 +144,6 @@ public class UserController {
 
     return new ResponseEntity<>(new ResponseMessage("Success", "Logged out"), HttpStatus.OK);
   }
-
-
 
 
 }

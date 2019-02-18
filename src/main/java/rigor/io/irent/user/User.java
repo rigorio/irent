@@ -1,5 +1,9 @@
 package rigor.io.irent.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,6 +11,9 @@ import javax.persistence.Id;
 import java.util.Arrays;
 
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
   @Id
@@ -24,16 +31,6 @@ public class User {
 
   public boolean isVerified() {
     return verified;
-  }
-
-  public User() {
-  }
-
-  public User(String email, String name, String password, String[] contacts) {
-    this.email = email;
-    this.name = name;
-    this.password = password;
-    this.contacts = contacts;
   }
 
   public Long getId() {

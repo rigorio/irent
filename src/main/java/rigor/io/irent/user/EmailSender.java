@@ -11,7 +11,7 @@ import java.util.Properties;
 public class EmailSender {
 
 
-  private String host = "";
+  private String host = "http://localhost:8080";
   private String username = "irent.mcc.ph@gmail.com";
   private String password = "makapagal";
   private Properties props;
@@ -31,17 +31,24 @@ public class EmailSender {
 
   public EmailSender() throws MessagingException {
     props = getGmailProperties();
+    System.out.println("session " + username + password);
     session = Session.getInstance(props, new Authenticator() {
       @Override
       protected PasswordAuthentication getPasswordAuthentication() {
         return new PasswordAuthentication(username, password);
       }
     });
+//    session  = Session.getInstance(props, new Authenticator() {
+//      protected PasswordAuthentication getPasswordAuthentication() {
+//        return new PasswordAuthentication(username, password);
+//      }
+//    });
     message = new MimeMessage(session);
     message.setFrom(new InternetAddress(username));
   }
 
   public void sendMail(String email) throws MessagingException {
+    System.out.println("email " + email);
     message.setRecipients(
         Message.RecipientType.TO, InternetAddress.parse(email));
     MimeBodyPart mimeBodyPart = new MimeBodyPart();
@@ -50,22 +57,22 @@ public class EmailSender {
 
     String code = Base64.getEncoder().withoutPadding().encodeToString(email.getBytes());
 
-    String link = host + "/api/account/confirmation?code=" + code;
+    String link = host + "/users/confirmation?code=" + code;
     String msg = "Please click the link to confirm your registration: " + link;
 
     sendMessage(mimeBodyPart, msg);
   }
 
 
-
   private void sendMessage(MimeBodyPart mimeBodyPart, String msg) throws MessagingException {
     mimeBodyPart.setContent(msg, "text/html");
-
+    System.out.println(msg);
+    System.out.println(mimeBodyPart);
     Multipart multipart = new MimeMultipart();
     multipart.addBodyPart(mimeBodyPart);
 
     message.setContent(multipart);
-
+    System.out.println(message);
     Transport.send(message);
   }
 
