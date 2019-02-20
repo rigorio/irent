@@ -23,8 +23,8 @@ public class Reservation {
   private Long userId;
   private Long houseId;
 
-  private String arrival;
-  private String departure;
+  private String checkIn;
+  private String checkOut;
 
 
   private String name;
@@ -50,8 +50,8 @@ public class Reservation {
   public Reservation(User user, House house, Stay stay) {
     userId = user.getId();
     houseId = house.getId();
-    arrival = stay.getArrival();
-    departure = stay.getDeparture();
+    checkIn = stay.getCheckIn();
+    checkOut = stay.getCheckOut();
     name = user.getName();
     contacts = user.getContacts();
     propertyType = house.getPropertyType();
@@ -73,9 +73,9 @@ public class Reservation {
     this.houseId = houseId;
   }
 
-  public Reservation(String arrival, String departure, Long userId, Long houseId) {
-    this.arrival = arrival;
-    this.departure = departure;
+  public Reservation(String checkIn, String checkOut, Long userId, Long houseId) {
+    this.checkIn = checkIn;
+    this.checkOut = checkOut;
     this.userId = userId;
     this.houseId = houseId;
   }

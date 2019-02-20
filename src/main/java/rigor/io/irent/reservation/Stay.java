@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Stay {
 
-  private String arrival;
-  private String departure;
+  private String checkIn;
+  private String checkOut;
 
 }
