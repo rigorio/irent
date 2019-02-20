@@ -97,7 +97,7 @@ public class UserController {
     return new ResponseEntity<>(new ResponseMessage("Success", save), HttpStatus.OK);
   }
 
-  @PostMapping("")
+  @PutMapping("")
   public ResponseEntity<?> editUserDetails(@RequestParam(required = false) String token,
                                            @RequestBody Map<String, Object> data) {
 
@@ -115,6 +115,31 @@ public class UserController {
     User u = userRepository.save(user);
 
     return new ResponseEntity<>(new ResponseMessage("Saved", u), HttpStatus.OK);
+  }
+
+
+
+  @PostMapping("/password")
+  public ResponseEntity<?> changePassword(@RequestParam(required = false) String token,
+                                          @RequestBody Map<String, String> data) {
+    if (!tokenService.isValid(token))
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Not Authorized"), HttpStatus.OK);
+
+
+    String oldPassword = data.get("oldPassword");
+    String newPassword = data.get("newPassword");
+
+    User user = tokenService.fetchUser(token);
+
+    Optional<User> u = userRepository.findByEmailAndPassword(user.getEmail(), oldPassword);
+
+    if (!u.isPresent())
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Wrong password"), HttpStatus.OK);
+
+    user.setPassword(newPassword);
+    User savedUser = userRepository.save(user);
+
+    return new ResponseEntity<>(new ResponseMessage("Success", "Password was changed"), HttpStatus.OK);
   }
 
   @GetMapping("/confirmation")
