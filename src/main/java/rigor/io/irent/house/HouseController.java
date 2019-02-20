@@ -89,6 +89,12 @@ public class HouseController {
     return new ResponseEntity<>(createMap("Success", "Successfully added rental"), HttpStatus.OK);
   }
 
+  /**
+   *  WILL DELETE THE HOUSE ITSELF, DOES NOT JUST CANCEL RESERVATION LOL
+   * @param id
+   * @param token
+   * @return
+   */
   @DeleteMapping("/houses/{id}")
   public ResponseEntity<?> deleteHouse(@PathVariable Long id,
                                        @RequestParam(required = false) String token) {

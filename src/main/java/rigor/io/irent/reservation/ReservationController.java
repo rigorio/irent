@@ -100,7 +100,7 @@ public class ReservationController {
 
     User user = tokenService.fetchUser(token);
 
-    reservationRepository.deleteById(id); // TODO EHHH ??
+    reservationRepository.deleteById(id); // TODO EHHH ?? nanu?
 
     return new ResponseEntity<>(createMap("Deleted", "Reservation Cancelled!"), HttpStatus.OK);
   }
