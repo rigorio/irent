@@ -44,6 +44,7 @@ public class UserController {
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+    System.out.println("hotdog");
     String email = credentials.get("email");
     String password = credentials.get("password");
     if (email == null && password == null)

@@ -24,11 +24,17 @@ import java.util.HashMap;
 @CrossOrigin
 public class ImageController {
 
-  private final String base = "/api/images";
+  private final String base = "/api/images"; // weird?
   private TokenService tokenService;
 
   public ImageController(TokenService tokenService) {
     this.tokenService = tokenService;
+  }
+
+  @GetMapping("/print")
+  public void print(@RequestParam String file) {
+    System.out.println("here in print");
+    System.out.println(file);
   }
 
   @GetMapping(base + "/{pic}")
