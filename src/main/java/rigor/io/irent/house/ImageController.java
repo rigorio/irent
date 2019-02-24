@@ -22,6 +22,7 @@ import java.util.HashMap;
 
 @RestController
 @CrossOrigin
+@SuppressWarnings("all")
 public class ImageController {
 
   private final String base = "/api/images"; // weird?
@@ -64,12 +65,15 @@ public class ImageController {
     System.out.println(ofn);
 
     String u = tokenService.fetchUser(token).getName();
-    String name = ofn+u;
+    String name = ofn + u;
 
     System.out.println("name");
     System.out.println(name);
 
-    String fileName = Base64.getEncoder().withoutPadding().encodeToString(name.getBytes()) + "." + ofn.split("\\.")[1];
+    String[] split = ofn.split("\\.");
+    for (String string : split)
+      System.out.println("jaon " + split);
+    String fileName = Base64.getEncoder().withoutPadding().encodeToString(name.getBytes()) + "." + split[1];
     Path path = Paths.get("upload-dir/" + fileName);
     File file = new File(path.toUri());
     if (file.exists())
@@ -81,6 +85,45 @@ public class ImageController {
       put("message", "/" + path.getFileName());
     }}, HttpStatus.ACCEPTED);
   }
+
+
+  @PostMapping("/api/images")
+  public ResponseEntity<?> uploadIonicImage(@RequestPart(name = "file") MultipartFile multipartFile,
+                                            @RequestParam String token,
+                                            @RequestParam String type) throws IOException {
+
+    if (!tokenService.isValid(token))
+      return notAuthorized();
+
+    InputStream in = multipartFile.getInputStream();
+    System.out.println("is");
+    System.out.println(in.available());
+    String ofn = multipartFile.getOriginalFilename();
+    System.out.println("ofn");
+    System.out.println(ofn);
+
+    String u = tokenService.fetchUser(token).getName();
+    String name = ofn + u;
+
+    System.out.println("name");
+    System.out.println(name);
+
+    String[] split = ofn.split("\\.");
+    for (String string : split)
+      System.out.println("jaon " + split);
+    String fileName = Base64.getEncoder().withoutPadding().encodeToString(name.getBytes()) + "." + type;
+    Path path = Paths.get("upload-dir/" + fileName);
+    File file = new File(path.toUri());
+    if (file.exists())
+      file.delete();
+    Files.copy(in, path);
+    in.close();
+    return new ResponseEntity<>(new HashMap<String, String>() {{
+      put("status", "Success");
+      put("message", "/" + path.getFileName());
+    }}, HttpStatus.ACCEPTED);
+  }
+
 
   private ResponseEntity<HashMap<String, Object>> notAuthorized() {
     return new ResponseEntity<>(createMap("error", "not authorized"), HttpStatus.OK);
