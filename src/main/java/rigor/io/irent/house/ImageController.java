@@ -57,10 +57,17 @@ public class ImageController {
       return notAuthorized();
 
     InputStream in = multipartFile.getInputStream();
+    System.out.println("is");
+    System.out.println(in.available());
     String ofn = multipartFile.getOriginalFilename();
+    System.out.println("ofn");
+    System.out.println(ofn);
 
     String u = tokenService.fetchUser(token).getName();
     String name = ofn+u;
+
+    System.out.println("name");
+    System.out.println(name);
 
     String fileName = Base64.getEncoder().withoutPadding().encodeToString(name.getBytes()) + "." + ofn.split("\\.")[1];
     Path path = Paths.get("upload-dir/" + fileName);
