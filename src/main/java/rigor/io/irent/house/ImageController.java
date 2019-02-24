@@ -87,7 +87,7 @@ public class ImageController {
   }
 
 
-  @PostMapping("/api/images")
+  @PostMapping("/api/images/v2")
   public ResponseEntity<?> uploadIonicImage(@RequestPart(name = "file") MultipartFile multipartFile,
                                             @RequestParam String token,
                                             @RequestParam String type) throws IOException {
