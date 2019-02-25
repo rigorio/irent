@@ -5,9 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import rigor.io.irent.house.House;
+import rigor.io.irent.house.Review;
 import rigor.io.irent.user.User;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -45,7 +47,11 @@ public class Reservation {
   @Column(columnDefinition = "CLOB")
   private String description;
   private Integer slots;
-  private Integer[] reviews;
+  private List<Review> reviews;
+
+  public boolean addReview(Review review) {
+    return reviews.add(review);
+  }
 
   public Reservation(User user, House house, Stay stay) {
     userId = user.getId();

@@ -106,11 +106,13 @@ public class UserController {
       return new ResponseEntity<>(new ResponseMessage("Failed", "Not Authorized"), HttpStatus.OK);
 
     String name = (String) data.get("name");
+    String email = (String) data.get("email");
     List<String> contacts = (List) data.get("contacts");
 
     User user = tokenService.fetchUser(token);
 
     user.setName(name);
+    user.setEmail(email);
     user.setContacts(contacts.toArray(new String[0]));
 
     User u = userRepository.save(user);

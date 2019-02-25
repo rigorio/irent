@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -36,7 +37,11 @@ public class House {
   @Column(columnDefinition = "CLOB")
   private String description;
   private Integer slots;
-  private Integer[] reviews;
+  private List<Review> reviews;
+
+  public boolean addReview(Review review) {
+    return reviews.add(review);
+  }
 
 
 }

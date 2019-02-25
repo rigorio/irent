@@ -1,24 +1,21 @@
 package rigor.io.irent.house;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import rigor.io.irent.ReservationService;
-import rigor.io.irent.ResponseHub;
+import rigor.io.irent.ResponseMessage;
 import rigor.io.irent.joined.HouseUser;
 import rigor.io.irent.joined.HouseUserRepository;
+import rigor.io.irent.reservation.Reservation;
+import rigor.io.irent.reservation.ReservationRepository;
 import rigor.io.irent.token.TokenService;
 import rigor.io.irent.user.User;
 import rigor.io.irent.user.UserRepository;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,14 +24,16 @@ import java.util.stream.Collectors;
 public class HouseController {
 
   private HouseRepository houseRepository;
+  private ReservationRepository reservationRepository;
   private UserRepository userRepository;
   private HouseUserRepository houseUserRepository;
   private TokenService tokenService;
   private ReservationService reservationService;
   private ObjectMapper objectMapper = new ObjectMapper();
 
-  public HouseController(HouseRepository houseRepository, UserRepository userRepository, HouseUserRepository houseUserRepository, TokenService tokenService, ReservationService reservationService) {
+  public HouseController(HouseRepository houseRepository, ReservationRepository reservationRepository, UserRepository userRepository, HouseUserRepository houseUserRepository, TokenService tokenService, ReservationService reservationService) {
     this.houseRepository = houseRepository;
+    this.reservationRepository = reservationRepository;
     this.userRepository = userRepository;
     this.houseUserRepository = houseUserRepository;
     this.tokenService = tokenService;
@@ -90,7 +89,8 @@ public class HouseController {
   }
 
   /**
-   *  WILL DELETE THE HOUSE ITSELF, DOES NOT JUST CANCEL RESERVATION LOL
+   * WILL DELETE THE HOUSE ITSELF, DOES NOT JUST CANCEL RESERVATION LOL
+   *
    * @param id
    * @param token
    * @return
@@ -114,6 +114,51 @@ public class HouseController {
     House house = objectMapper.readValue(objectMapper.writeValueAsString(data), House.class);
     House h = houseRepository.save(house);
     return new ResponseEntity<>(createMap("Success", "Details were saved"), HttpStatus.OK);
+  }
+
+  @PostMapping("/review")
+  public ResponseEntity<?> addReview(@RequestBody Map<String, Object> data) {
+    Integer score = Integer.valueOf(data.get("score").toString());
+    String review = String.valueOf(data.get("review"));
+    Review rev = new Review(score, review);
+    Long houseId = Long.parseLong(data.get("houseId").toString());
+    Long reservationId = Long.parseLong(data.get("reservationId").toString());
+
+    Optional<House> h = houseRepository.findById(houseId);
+    if (!h.isPresent())
+      return new ResponseEntity<>(new ResponseMessage("Failed", "A problem has occured. Please come back later"), HttpStatus.OK);
+
+    Optional<Reservation> r = reservationRepository.findById(reservationId);
+    if (!r.isPresent())
+      return new ResponseEntity<>(new ResponseMessage("Failed", "A problem has occured. Please come back later"), HttpStatus.OK);
+
+    House house = h.get();
+    house.addReview(rev);
+    Reservation reservation = r.get();
+    reservation.addReview(rev);
+
+    houseRepository.save(house);
+    reservationRepository.save(reservation);
+
+    return new ResponseEntity<>(new ResponseMessage("Success", "Review was added"), HttpStatus.OK);
+  }
+
+  @GetMapping("/amenities")
+  public ResponseEntity<?> amenities() {
+
+    return new ResponseEntity<>(new ResponseMessage("Success",
+                                                    Arrays.asList("Computer and Internet access",
+                                                                  "Swimming pools",
+                                                                  "Parking",
+                                                                  "Laundry service",
+                                                                  "Air-conditioning",
+                                                                  "Storage in unit",
+                                                                  "Fitness center",
+                                                                  "Playground",
+                                                                  "Security guard",
+                                                                  "Security cameras",
+                                                                  "Gated access")
+    ), HttpStatus.OK);
   }
 
 
