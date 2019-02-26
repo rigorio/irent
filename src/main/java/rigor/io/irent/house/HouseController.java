@@ -54,12 +54,12 @@ public class HouseController {
 //                                 .email("rigosarmiento4@gmail.com")
 //                                 .build());
 //    User test = this.userRepository.save(User.builder()
-//                                              .name("regosarmiento")
-//                                              .contacts(new String[]{"091sdfa23950244", "rigosarasfdmiento4@gmial.com"})
-//                                              .verified(true)
-//                                              .password("test")
-//                                              .email("test@test.com")
-//                                              .build());
+//                                             .name("regosarmiento")
+//                                             .contacts(new String[]{"091sdfa23950244", "rigosarasfdmiento4@gmial.com"})
+//                                             .verified(true)
+//                                             .password("test")
+//                                             .email("test@test.com")
+//                                             .build());
 //    House save = this.houseRepository.save(House.builder()
 //                                               .coverPic("http://localhost:8080/api/images/MF9Pek5xa2Y3LmpwZWdyaWdvcmVp.jpeg")
 //                                               .title("Dreamy")
@@ -161,12 +161,42 @@ public class HouseController {
   }
 
   @PutMapping("/houses")
+  @SuppressWarnings("all")
   public ResponseEntity<?> editHouse(@RequestParam(required = false) String token, @RequestBody Map<String, Object> data) throws IOException {
     if (!tokenService.isValid(token))
       return new ResponseEntity<>(createMap("Failed", "Error occured for " + token), HttpStatus.OK);
 
     House house = objectMapper.readValue(objectMapper.writeValueAsString(data), House.class);
-    House h = houseRepository.save(house);
+    Long id = house.getId();
+    House realHouse = houseRepository.findById(id).orElse(house);
+    realHouse.setCoverPic(house.getCoverPic());
+    realHouse.setTitle(house.getTitle());
+    realHouse.setPropertyType(house.getPropertyType());
+    realHouse.setStreet(house.getStreet());
+    realHouse.setCity(house.getCity());
+    realHouse.setState(house.getState());
+    realHouse.setCountry(house.getCountry());
+    realHouse.setPrice(house.getPrice());
+    realHouse.setDescription(house.getDescription());
+    realHouse.setSlots(house.getSlots());
+    realHouse.setAmenities(house.getAmenities());
+    houseRepository.save(realHouse);
+    List<Reservation> reservations = reservationRepository.findByHouseId(realHouse.getId());
+    for (Reservation reservation : reservations) {
+      reservation.setCoverPic(house.getCoverPic());
+      reservation.setTitle(house.getTitle());
+      reservation.setPropertyType(house.getPropertyType());
+      reservation.setStreet(house.getStreet());
+      reservation.setCity(house.getCity());
+      reservation.setState(house.getState());
+      reservation.setCountry(house.getCountry());
+      reservation.setPrice(house.getPrice());
+      reservation.setDescription(house.getDescription());
+      reservation.setSlots(house.getSlots());
+      reservation.setAmenities(house.getAmenities());
+    }
+    reservationRepository.saveAll(reservations);
+
     return new ResponseEntity<>(createMap("Success", "Details were saved"), HttpStatus.OK);
   }
 
@@ -220,7 +250,9 @@ public class HouseController {
     reservation.setAverage(average);
 
     houseRepository.save(house);
-    reservationRepository.save(reservation);
+    Reservation dang = reservationRepository.save(reservation);
+    System.out.println("dang");
+    System.out.println(dang);
 
     return new ResponseEntity<>(new ResponseMessage("Success", "HouseReview was added"), HttpStatus.OK);
   }

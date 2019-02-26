@@ -63,7 +63,7 @@ public class ReservationController {
     List<Reservation> reservations = reservationRepository.findAll().stream()
         .filter(reservation -> reservation.getUserId().equals(user.getId()))
         .collect(Collectors.toList());
-    if (reservations.size() > 3)
+    if (reservations.size() >= 3)
       return new ResponseEntity<>(new ResponseMessage("Not Allowed", "You are only" +
           "allowed up to 3 reservations per transient"), HttpStatus.OK);
 

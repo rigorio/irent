@@ -73,6 +73,7 @@ public class Reservation {
     price = house.getPrice();
     description = house.getDescription();
     slots = house.getSlots();
+    average = house.getAverage();
     reservationReviews = house.getHouseReviews().stream()
         .map(ReservationReview::convert)
         .collect(Collectors.toList());
