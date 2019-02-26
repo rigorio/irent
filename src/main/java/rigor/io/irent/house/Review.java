@@ -10,6 +10,7 @@ import javax.persistence.Embeddable;
 @AllArgsConstructor
 public class Review {
 
+  private Long userId;
   private Integer score;
   private String review;
 

@@ -71,8 +71,8 @@ public class HouseController {
     List<House> allHouses = houseRepository.findAll(); // to avoid multiple queries
 
     List<House> houses = houseUsers.stream()
-        .map(houseUser -> allHouses.stream().filter(house -> house.getId().equals(houseUser.getHouseId())).findAny().orElse(new House()))
-        .collect(Collectors.toList());
+                                   .map(houseUser -> allHouses.stream().filter(house -> house.getId().equals(houseUser.getHouseId())).findAny().orElse(new House()))
+                                   .collect(Collectors.toList());
     return new ResponseEntity<>(createMap("Success", houses), HttpStatus.OK);
   }
 
@@ -117,10 +117,13 @@ public class HouseController {
   }
 
   @PostMapping("/review")
-  public ResponseEntity<?> addReview(@RequestBody Map<String, Object> data) {
+  public ResponseEntity<?> addReview(@RequestParam String token,
+                                     @RequestBody Map<String, Object> data) {
     Integer score = Integer.valueOf(data.get("score").toString());
     String review = String.valueOf(data.get("review"));
-    Review rev = new Review(score, review);
+    User user = tokenService.fetchUser(token);
+    Long userId = user.getId();
+    Review rev = new Review(userId, score, review);
     Long houseId = Long.parseLong(data.get("houseId").toString());
     Long reservationId = Long.parseLong(data.get("reservationId").toString());
 
@@ -133,6 +136,13 @@ public class HouseController {
       return new ResponseEntity<>(new ResponseMessage("Failed", "A problem has occured. Please come back later"), HttpStatus.OK);
 
     House house = h.get();
+
+    List<Review> reviews = house.getReviews();
+    for (Review review1 : reviews) {
+      if (review1.getUserId().equals(userId))
+        return new ResponseEntity<>(new ResponseMessage("Failed", "You've already added a review!"), HttpStatus.OK);
+    }
+
     house.addReview(rev);
     Reservation reservation = r.get();
     reservation.addReview(rev);
@@ -141,6 +151,33 @@ public class HouseController {
     reservationRepository.save(reservation);
 
     return new ResponseEntity<>(new ResponseMessage("Success", "Review was added"), HttpStatus.OK);
+  }
+
+  @GetMapping("/rating/{houseId}")
+  public ResponseEntity<?> getScore(@PathVariable Long houseId) {
+
+    Optional<House> byId = houseRepository.findById(houseId);
+    if (!byId.isPresent())
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Please try later"), HttpStatus.OK);
+
+
+    House house = byId.get();
+    List<Integer> scores = house.getReviews().stream()
+                                .map(Review::getScore)
+                                .collect(Collectors.toList());
+    Integer sum = 0;
+    for (Integer score : scores)
+      sum += score;
+
+    Integer size = scores.size();
+
+    if (size > sum)
+      return new ResponseEntity<>(new ResponseMessage("Success", 0), HttpStatus.OK);
+
+    Integer average = sum / size;
+    return new ResponseEntity<>(new ResponseMessage("Success", average), HttpStatus.OK);
+
+
   }
 
   @GetMapping("/amenities")
