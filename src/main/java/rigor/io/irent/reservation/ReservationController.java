@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rigor.io.irent.ReservationService;
+import rigor.io.irent.ResponseMessage;
 import rigor.io.irent.house.House;
 import rigor.io.irent.house.HouseRepository;
 import rigor.io.irent.joined.HouseUser;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -57,6 +59,13 @@ public class ReservationController {
 
     if (!h.isPresent())
       throw new RuntimeException("House was not found in house repo");
+
+    List<Reservation> reservations = reservationRepository.findAll().stream()
+        .filter(reservation -> reservation.getUserId().equals(user.getId()))
+        .collect(Collectors.toList());
+    if (reservations.size() > 3)
+      return new ResponseEntity<>(new ResponseMessage("Not Allowed", "You are only" +
+          "allowed up to 3 reservations per transient"), HttpStatus.OK);
 
     House house = h.get();
     Object o = request.get("stay");

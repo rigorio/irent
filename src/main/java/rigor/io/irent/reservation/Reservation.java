@@ -5,11 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import rigor.io.irent.house.House;
-import rigor.io.irent.house.Review;
 import rigor.io.irent.user.User;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Entity
@@ -47,10 +47,12 @@ public class Reservation {
   @Column(columnDefinition = "CLOB")
   private String description;
   private Integer slots;
-  private List<Review> reviews;
+  private Double average;
+  @OneToMany(cascade=CascadeType.ALL)
+  private List<ReservationReview> reservationReviews;
 
-  public boolean addReview(Review review) {
-    return reviews.add(review);
+  public boolean addReview(ReservationReview houseReview) {
+    return reservationReviews.add(houseReview);
   }
 
   public Reservation(User user, House house, Stay stay) {
@@ -71,7 +73,9 @@ public class Reservation {
     price = house.getPrice();
     description = house.getDescription();
     slots = house.getSlots();
-    reviews = house.getReviews();
+    reservationReviews = house.getHouseReviews().stream()
+        .map(ReservationReview::convert)
+        .collect(Collectors.toList());
   }
 
   public Reservation(Long userId, Long houseId) {

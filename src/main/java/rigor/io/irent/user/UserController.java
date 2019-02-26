@@ -23,14 +23,6 @@ public class UserController {
     this.tokenService = tokenService;
     this.userRepository = userRepository;
     this.emailSender = emailSender;
-    User user = User.builder()
-        .name("Rigo Sarmiento")
-        .contacts(new String[]{"rigosarmiento4@email", "09330930411", "09330920641"})
-        .verified(true)
-        .password("test")
-        .email("rigosarmiento4@gmail.com")
-        .build();
-    this.userRepository.save(user);
   }
 
   @GetMapping("")
@@ -119,7 +111,6 @@ public class UserController {
 
     return new ResponseEntity<>(new ResponseMessage("Saved", u), HttpStatus.OK);
   }
-
 
 
   @PostMapping("/password")

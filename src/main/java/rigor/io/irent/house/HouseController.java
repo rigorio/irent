@@ -10,6 +10,7 @@ import rigor.io.irent.joined.HouseUser;
 import rigor.io.irent.joined.HouseUserRepository;
 import rigor.io.irent.reservation.Reservation;
 import rigor.io.irent.reservation.ReservationRepository;
+import rigor.io.irent.reservation.ReservationReview;
 import rigor.io.irent.token.TokenService;
 import rigor.io.irent.user.User;
 import rigor.io.irent.user.UserRepository;
@@ -38,6 +39,59 @@ public class HouseController {
     this.houseUserRepository = houseUserRepository;
     this.tokenService = tokenService;
     this.reservationService = reservationService;
+    User us = this.userRepository.save(User.builder()
+                                           .name("rigorei")
+                                           .contacts(new String[]{"09123950244", "rigorei.sarmiento@gmail.com"})
+                                           .verified(true)
+                                           .password("test")
+                                           .email("rigorei.sarmiento@gmail.com")
+                                           .build());
+    this.userRepository.save(User.builder()
+                                 .name("rigosarmiento")
+                                 .contacts(new String[]{"09123950244", "rigosarmiento4@gmial.com"})
+                                 .verified(true)
+                                 .password("test")
+                                 .email("rigosarmiento4@gmail.com")
+                                 .build());
+    User test = this.userRepository.save(User.builder()
+                                              .name("regosarmiento")
+                                              .contacts(new String[]{"091sdfa23950244", "rigosarasfdmiento4@gmial.com"})
+                                              .verified(true)
+                                              .password("test")
+                                              .email("test@test.com")
+                                              .build());
+    House save = this.houseRepository.save(House.builder()
+                                               .coverPic("http://localhost:8080/api/images/MF9Pek5xa2Y3LmpwZWdyaWdvcmVp.jpeg")
+                                               .title("Dreamy")
+                                               .propertyType("House")
+                                               .amenities(new String[]{"Air Conditioning"})
+                                               .street("123 Street")
+                                               .city("City of stars")
+                                               .state("State of Depression")
+                                               .average(3.0)
+                                               .country("Country road")
+                                               .price(4000L)
+                                               .description("bishu bashi bishu bashi")
+                                               .houseReviews(new ArrayList<>())
+                                               .build());
+    House save2 = this.houseRepository.save(House.builder()
+                                                .coverPic("http://localhost:8080/api/images/1.jpg")
+                                                .title("Syke")
+                                                .propertyType("Apartment")
+                                                .amenities(new String[]{"Air-Conditioning"})
+                                                .street("123 Spotify")
+                                                .city("City ")
+                                                .state("Depression")
+                                                .average(2.0)
+                                                .country("Country road")
+                                                .price(4000L)
+                                                .description("bishu bashi bishu bashi")
+                                                .houseReviews(new ArrayList<>())
+                                                .build());
+//    HouseReview review1 = new HouseReview(save.getId(), 3, "");
+//    HouseReview review2 = new HouseReview(save.getId(), 3, "");
+    this.houseUserRepository.save(new HouseUser(test.getId(), save.getId()));
+    this.houseUserRepository.save(new HouseUser(test.getId(), save2.getId()));
   }
 
   @GetMapping("/houses")
@@ -71,8 +125,8 @@ public class HouseController {
     List<House> allHouses = houseRepository.findAll(); // to avoid multiple queries
 
     List<House> houses = houseUsers.stream()
-                                   .map(houseUser -> allHouses.stream().filter(house -> house.getId().equals(houseUser.getHouseId())).findAny().orElse(new House()))
-                                   .collect(Collectors.toList());
+        .map(houseUser -> allHouses.stream().filter(house -> house.getId().equals(houseUser.getHouseId())).findAny().orElse(new House()))
+        .collect(Collectors.toList());
     return new ResponseEntity<>(createMap("Success", houses), HttpStatus.OK);
   }
 
@@ -116,14 +170,26 @@ public class HouseController {
     return new ResponseEntity<>(createMap("Success", "Details were saved"), HttpStatus.OK);
   }
 
-  @PostMapping("/review")
+  @GetMapping("/reviews/{houseId}")
+  public ResponseEntity<?> viewReviews(@PathVariable Long houseId) {
+    Optional<House> byId = houseRepository.findById(houseId);
+    if (!byId.isPresent())
+      return new ResponseEntity<>(new ResponseMessage("Failed", "Please try again later"), HttpStatus.OK);
+
+    House house = byId.get();
+
+    List<HouseReview> reviews = house.getHouseReviews();
+    return new ResponseEntity<>(new ResponseMessage("Success", reviews), HttpStatus.OK);
+  }
+
+  @PostMapping("/house/review")
   public ResponseEntity<?> addReview(@RequestParam String token,
                                      @RequestBody Map<String, Object> data) {
-    Integer score = Integer.valueOf(data.get("score").toString());
+    Double score = Double.valueOf(data.get("score").toString());
     String review = String.valueOf(data.get("review"));
     User user = tokenService.fetchUser(token);
     Long userId = user.getId();
-    Review rev = new Review(userId, score, review);
+    HouseReview rev = new HouseReview(userId, score, review);
     Long houseId = Long.parseLong(data.get("houseId").toString());
     Long reservationId = Long.parseLong(data.get("reservationId").toString());
 
@@ -137,47 +203,46 @@ public class HouseController {
 
     House house = h.get();
 
-    List<Review> reviews = house.getReviews();
-    for (Review review1 : reviews) {
-      if (review1.getUserId().equals(userId))
+    List<HouseReview> houseReviews = house.getHouseReviews();
+    for (HouseReview houseReview1 : houseReviews) {
+      if (houseReview1.getUserId().equals(userId))
         return new ResponseEntity<>(new ResponseMessage("Failed", "You've already added a review!"), HttpStatus.OK);
     }
 
     house.addReview(rev);
+    double average = devoid(house);
+    System.out.println("Average is " + average);
+    house.setAverage(average);
+
+
     Reservation reservation = r.get();
-    reservation.addReview(rev);
+    reservation.addReview(ReservationReview.convert(rev));
+    reservation.setAverage(average);
 
     houseRepository.save(house);
     reservationRepository.save(reservation);
 
-    return new ResponseEntity<>(new ResponseMessage("Success", "Review was added"), HttpStatus.OK);
+    return new ResponseEntity<>(new ResponseMessage("Success", "HouseReview was added"), HttpStatus.OK);
   }
 
-  @GetMapping("/rating/{houseId}")
-  public ResponseEntity<?> getScore(@PathVariable Long houseId) {
 
-    Optional<House> byId = houseRepository.findById(houseId);
-    if (!byId.isPresent())
-      return new ResponseEntity<>(new ResponseMessage("Failed", "Please try later"), HttpStatus.OK);
+  private double devoid(House house) {
+    List<Double> scores = house.getHouseReviews().stream()
+        .map(HouseReview::getScore)
+        .collect(Collectors.toList());
+    System.out.println("scores");
+    System.out.println(scores);
 
-
-    House house = byId.get();
-    List<Integer> scores = house.getReviews().stream()
-                                .map(Review::getScore)
-                                .collect(Collectors.toList());
-    Integer sum = 0;
-    for (Integer score : scores)
+    Double sum = 0.0;
+    for (Double score : scores)
       sum += score;
 
-    Integer size = scores.size();
+    System.out.println("sum " + sum);
 
-    if (size > sum)
-      return new ResponseEntity<>(new ResponseMessage("Success", 0), HttpStatus.OK);
-
-    Integer average = sum / size;
-    return new ResponseEntity<>(new ResponseMessage("Success", average), HttpStatus.OK);
-
-
+    Double size = (double) scores.size();
+    if (size > sum || size == 0)
+      return 0;
+    return sum / size;
   }
 
   @GetMapping("/amenities")

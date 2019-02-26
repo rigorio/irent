@@ -37,10 +37,12 @@ public class House {
   @Column(columnDefinition = "CLOB")
   private String description;
   private Integer slots;
-  private List<Review> reviews;
+  private Double average;
+  @OneToMany(cascade=CascadeType.ALL)
+  private List<HouseReview> houseReviews;
 
-  public boolean addReview(Review review) {
-    return reviews.add(review);
+  public boolean addReview(HouseReview houseReview) {
+    return houseReviews.add(houseReview);
   }
 
 
