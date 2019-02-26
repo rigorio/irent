@@ -46,52 +46,52 @@ public class HouseController {
                                            .password("test")
                                            .email("rigorei.sarmiento@gmail.com")
                                            .build());
-//    this.userRepository.save(User.builder()
-//                                 .name("rigosarmiento")
-//                                 .contacts(new String[]{"09123950244", "rigosarmiento4@gmial.com"})
-//                                 .verified(true)
-//                                 .password("test")
-//                                 .email("rigosarmiento4@gmail.com")
-//                                 .build());
-//    User test = this.userRepository.save(User.builder()
-//                                             .name("regosarmiento")
-//                                             .contacts(new String[]{"091sdfa23950244", "rigosarasfdmiento4@gmial.com"})
-//                                             .verified(true)
-//                                             .password("test")
-//                                             .email("test@test.com")
-//                                             .build());
-//    House save = this.houseRepository.save(House.builder()
-//                                               .coverPic("http://localhost:8080/api/images/MF9Pek5xa2Y3LmpwZWdyaWdvcmVp.jpeg")
-//                                               .title("Dreamy")
-//                                               .propertyType("House")
-//                                               .amenities(new String[]{"Air Conditioning"})
-//                                               .street("123 Street")
-//                                               .city("City of stars")
-//                                               .state("State of Depression")
-//                                               .average(3.0)
-//                                               .country("Country road")
-//                                               .price(4000L)
-//                                               .description("bishu bashi bishu bashi")
-//                                               .houseReviews(new ArrayList<>())
-//                                               .build());
-//    House save2 = this.houseRepository.save(House.builder()
-//                                                .coverPic("http://localhost:8080/api/images/1.jpg")
-//                                                .title("Syke")
-//                                                .propertyType("Apartment")
-//                                                .amenities(new String[]{"Air-Conditioning"})
-//                                                .street("123 Spotify")
-//                                                .city("City ")
-//                                                .state("Depression")
-//                                                .average(2.0)
-//                                                .country("Country road")
-//                                                .price(4000L)
-//                                                .description("bishu bashi bishu bashi")
-//                                                .houseReviews(new ArrayList<>())
-//                                                .build());
-////    HouseReview review1 = new HouseReview(save.getId(), 3, "");
-////    HouseReview review2 = new HouseReview(save.getId(), 3, "");
-//    this.houseUserRepository.save(new HouseUser(test.getId(), save.getId()));
-//    this.houseUserRepository.save(new HouseUser(test.getId(), save2.getId()));
+    this.userRepository.save(User.builder()
+                                 .name("rigosarmiento")
+                                 .contacts(new String[]{"09123950244", "rigosarmiento4@gmial.com"})
+                                 .verified(true)
+                                 .password("test")
+                                 .email("rigosarmiento4@gmail.com")
+                                 .build());
+    User test = this.userRepository.save(User.builder()
+                                             .name("regosarmiento")
+                                             .contacts(new String[]{"091sdfa23950244", "rigosarasfdmiento4@gmial.com"})
+                                             .verified(true)
+                                             .password("test")
+                                             .email("test@test.com")
+                                             .build());
+    House save = this.houseRepository.save(House.builder()
+                                               .coverPic("http://localhost:8080/api/images/MF9Pek5xa2Y3LmpwZWdyaWdvcmVp.jpeg")
+                                               .title("Dreamy")
+                                               .propertyType("House")
+                                               .amenities(new String[]{"Air Conditioning"})
+                                               .street("123 Street")
+                                               .city("City of stars")
+                                               .state("State of Depression")
+                                               .average(3.0)
+                                               .country("Country road")
+                                               .price(4000L)
+                                               .description("bishu bashi bishu bashi")
+                                               .houseReviews(new ArrayList<>())
+                                               .build());
+    House save2 = this.houseRepository.save(House.builder()
+                                                .coverPic("http://localhost:8080/api/images/1.jpg")
+                                                .title("Syke")
+                                                .propertyType("Apartment")
+                                                .amenities(new String[]{"Air-Conditioning"})
+                                                .street("123 Spotify")
+                                                .city("City ")
+                                                .state("Depression")
+                                                .average(2.0)
+                                                .country("Country road")
+                                                .price(4000L)
+                                                .description("bishu bashi bishu bashi")
+                                                .houseReviews(new ArrayList<>())
+                                                .build());
+//    HouseReview review1 = new HouseReview(save.getId(), 3, "");
+//    HouseReview review2 = new HouseReview(save.getId(), 3, "");
+    this.houseUserRepository.save(new HouseUser(test.getId(), save.getId()));
+    this.houseUserRepository.save(new HouseUser(test.getId(), save2.getId()));
   }
 
   @GetMapping("/houses")
