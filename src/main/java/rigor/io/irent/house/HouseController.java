@@ -40,38 +40,43 @@ public class HouseController {
     this.tokenService = tokenService;
     this.reservationService = reservationService;
     User us = this.userRepository.save(User.builder()
-                                           .name("rigorei")
+                                           .firstName("Chika")
+                                           .lastName("Fujiwara")
+                                           .profPic("http://localhost:8080/api/images/MTQxIC0gZ2pKRHVOby5qcGdyaWdvc2FybWllbnRv.jpg")
                                            .contacts(new String[]{"09123950244", "rigorei.sarmiento@gmail.com"})
                                            .verified(true)
                                            .password("test")
                                            .email("rigorei.sarmiento@gmail.com")
                                            .build());
     this.userRepository.save(User.builder()
-                                 .name("rigosarmiento")
+                                 .firstName("Rigo")
+                                 .lastName("Sarmiento")
                                  .contacts(new String[]{"09123950244", "rigosarmiento4@gmial.com"})
                                  .verified(true)
                                  .password("test")
                                  .email("rigosarmiento4@gmail.com")
                                  .build());
     User test = this.userRepository.save(User.builder()
-                                             .name("regosarmiento")
+                                             .firstName("Golden")
+                                             .lastName("Boy")
                                              .contacts(new String[]{"091sdfa23950244", "rigosarasfdmiento4@gmial.com"})
                                              .verified(true)
                                              .password("test")
                                              .email("test@test.com")
                                              .build());
     House save = this.houseRepository.save(House.builder()
-                                               .coverPic("http://localhost:8080/api/images/MF9Pek5xa2Y3LmpwZWdyaWdvcmVp.jpeg")
-                                               .title("Dreamy")
+                                               .coverPic("http://localhost:8080/api/images/MTQxIC0gZ2pKRHVOby5qcGdyaWdvc2FybWllbnRv.jpg")
+                                               .title("Super Summit Rice Gardens")
                                                .propertyType("House")
                                                .amenities(new String[]{"Air Conditioning"})
-                                               .street("123 Street")
-                                               .city("City of stars")
-                                               .state("State of Depression")
-                                               .average(3.0)
-                                               .country("Country road")
+                                               .street("43 Street")
+                                               .slots(4)
+                                               .city("Kuala City")
+                                               .state("Gonging")
+                                               .average(5.0)
+                                               .country("Malaysia")
                                                .price(4000L)
-                                               .description("bishu bashi bishu bashi")
+                                               .description(rice)
                                                .houseReviews(new ArrayList<>())
                                                .build());
     House save2 = this.houseRepository.save(House.builder()
@@ -81,17 +86,25 @@ public class HouseController {
                                                 .amenities(new String[]{"Air-Conditioning"})
                                                 .street("123 Spotify")
                                                 .city("City ")
+                                                .slots(3)
                                                 .state("Depression")
-                                                .average(2.0)
+                                                .average(0.0)
                                                 .country("Country road")
                                                 .price(4000L)
                                                 .description("bishu bashi bishu bashi")
                                                 .houseReviews(new ArrayList<>())
                                                 .build());
-//    HouseReview review1 = new HouseReview(save.getId(), 3, "");
-//    HouseReview review2 = new HouseReview(save.getId(), 3, "");
+    HouseReview review1 = new HouseReview(save.getId(), 5.0, nasi);
+    save.addReview(review1);
+    this.houseRepository.save(save);
+    HouseReview review2 = new HouseReview(save.getId(), 3.0, "");
     this.houseUserRepository.save(new HouseUser(test.getId(), save.getId()));
     this.houseUserRepository.save(new HouseUser(test.getId(), save2.getId()));
+  }
+
+  @GetMapping("/valid")
+  public ResponseEntity<?> validate(@RequestParam String token) {
+    return new ResponseEntity<>(new ResponseMessage("Success", tokenService.isValid(token)), HttpStatus.OK);
   }
 
   @GetMapping("/houses")
@@ -303,5 +316,13 @@ public class HouseController {
     }};
   }
 
+  private String rice = "Rice is the seed of the grass species Oryza sativa (Asian rice) or Oryza glaberrima (African rice)." +
+      " As a cereal grain, it is the most widely consumed staple food for a large part of the world's human population," +
+      " especially in Asia. It is the agricultural commodity with the third-highest worldwide production (rice, 741.5 million " +
+      "tonnes in 2014), after sugarcane (1.9 billion tonnes) and maize (1.0 billion tonnes)";
+
+  private String nasi = "Cooked, unenriched, white, long-grained rice is composed of 68% water, 28% carbohydrates, " +
+      "3% protein, and negligible fat (table). In a 100 gram serving, it provides 130 calories and contains no micronutrients" +
+      " in significant amounts, with all less than 10% of the Daily Value (DV) (table).";
 
 }

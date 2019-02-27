@@ -64,7 +64,8 @@ public class ImageController {
     System.out.println("ofn");
     System.out.println(ofn);
 
-    String u = tokenService.fetchUser(token).getName();
+    User user = tokenService.fetchUser(token);
+    String u = user.getFirstName() + user.getLastName();
     String name = ofn + u;
 
     System.out.println("name");
@@ -102,7 +103,8 @@ public class ImageController {
     System.out.println("ofn");
     System.out.println(ofn);
 
-    String u = tokenService.fetchUser(token).getName();
+    User user = tokenService.fetchUser(token);
+    String u = user.getFirstName() + user.getLastName();
     String name = ofn + u;
 
     System.out.println("name");

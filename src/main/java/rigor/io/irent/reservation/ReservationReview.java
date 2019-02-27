@@ -16,6 +16,7 @@ public class ReservationReview {
   private Long id;
   private Long userId;
   private Double score;
+  @Column(columnDefinition = "CLOB")
   private String review;
 
   public ReservationReview() {

@@ -28,8 +28,9 @@ public class Reservation {
   private String checkIn;
   private String checkOut;
 
+  private String firstName;
+  private String lastName;
 
-  private String name;
   private String[] contacts;
 
   private String propertyType;
@@ -60,7 +61,8 @@ public class Reservation {
     houseId = house.getId();
     checkIn = stay.getCheckIn();
     checkOut = stay.getCheckOut();
-    name = user.getName();
+    firstName = user.getFirstName();
+    lastName = user.getLastName();
     contacts = user.getContacts();
     propertyType = house.getPropertyType();
     amenities = house.getAmenities();

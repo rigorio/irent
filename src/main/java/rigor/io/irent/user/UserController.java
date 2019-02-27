@@ -63,7 +63,8 @@ public class UserController {
   @PostMapping("/register")
   public ResponseEntity<?> register(@RequestBody Map<String, Object> details) throws MessagingException {
     String email = (String) details.get("email");
-    String name = (String) details.get("name");
+    String firstName = (String) details.get("firstName");
+    String lastName = (String) details.get("lastName");
     String password = (String) details.get("password");
     List<String> contacts = (List) details.get("contacts");
 
@@ -75,7 +76,8 @@ public class UserController {
 
     User user = User.builder()
         .email(email)
-        .name(name)
+        .firstName(firstName)
+        .lastName(lastName)
         .password(password)
         .contacts(contacts.toArray(new String[0]))
         .verified(false)
@@ -97,13 +99,17 @@ public class UserController {
     if (!tokenService.isValid(token))
       return new ResponseEntity<>(new ResponseMessage("Failed", "Not Authorized"), HttpStatus.OK);
 
-    String name = (String) data.get("name");
+    String firstName = (String) data.get("firstName");
+    String lastName = (String) data.get("lastName");
     String email = (String) data.get("email");
+    String profPic = (String) data.get("profPic");
     List<String> contacts = (List) data.get("contacts");
 
     User user = tokenService.fetchUser(token);
 
-    user.setName(name);
+    user.setProfPic(profPic);
+    user.setFirstName(firstName);
+    user.setLastName(lastName);
     user.setEmail(email);
     user.setContacts(contacts.toArray(new String[0]));
 
