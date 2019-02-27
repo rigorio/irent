@@ -11,7 +11,7 @@ public class RandomStringGenerator {
   public List<String> generateCodes(int number) {
     Set<String> codes = new HashSet<>(number);
     String easy = RandomString.digits + "ACEFGHJKLMNPQRUVWXYabcdefhijkprstuvwx";
-    RandomString gen = new RandomString(10, new SecureRandom(), easy);
+    RandomString gen = new RandomString(5, new SecureRandom(), easy);
     for (int i = 0; i < number; i++) {
       codes.add(gen.nextString());
     }

@@ -116,7 +116,7 @@ public class ImageController {
       System.out.println("jaon " + split);
 
     RandomStringGenerator rsg = new RandomStringGenerator();
-    String fileName = Base64.getEncoder().withoutPadding().encodeToString(name.getBytes()) + rsg.generateCodes(4) + "." + type;
+    String fileName = Base64.getEncoder().withoutPadding().encodeToString(name.getBytes()) + rsg.generateCodes(1).get(0) + "." + type;
     Path path = Paths.get("upload-dir/" + fileName);
     File file = new File(path.toUri());
     if (file.exists())
