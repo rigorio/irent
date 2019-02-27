@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import rigor.io.irent.token.RandomStringGenerator;
 import rigor.io.irent.token.TokenService;
 import rigor.io.irent.user.User;
 
@@ -113,7 +114,9 @@ public class ImageController {
     String[] split = ofn.split("\\.");
     for (String string : split)
       System.out.println("jaon " + split);
-    String fileName = Base64.getEncoder().withoutPadding().encodeToString(name.getBytes()) + "." + type;
+
+    RandomStringGenerator rsg = new RandomStringGenerator();
+    String fileName = Base64.getEncoder().withoutPadding().encodeToString(name.getBytes()) + rsg.generateCodes(4) + "." + type;
     Path path = Paths.get("upload-dir/" + fileName);
     File file = new File(path.toUri());
     if (file.exists())
