@@ -42,64 +42,12 @@ public class HouseController {
     User us = this.userRepository.save(User.builder()
                                            .firstName("Chika")
                                            .lastName("Fujiwara")
-                                           .profPic("http://localhost:8080/api/images/MTQxIC0gZ2pKRHVOby5qcGdyaWdvc2FybWllbnRv.jpg")
-                                           .contacts(new String[]{"09123950244", "rigorei.sarmiento@gmail.com"})
+                                           .profPic("http://localhost:8080/api/images/M192YTVDc09DLmpwZWdyaWdvc2FybWllbnRv.jpg")
+                                           .contacts(new String[]{"09123950244", "test@test.com"})
                                            .verified(true)
                                            .password("test")
-                                           .email("rigorei.sarmiento@gmail.com")
+                                           .email("test@test.com")
                                            .build());
-    this.userRepository.save(User.builder()
-                                 .firstName("Rigo")
-                                 .lastName("Sarmiento")
-                                 .contacts(new String[]{"09123950244", "rigosarmiento4@gmial.com"})
-                                 .verified(true)
-                                 .password("test")
-                                 .email("rigosarmiento4@gmail.com")
-                                 .build());
-    User test = this.userRepository.save(User.builder()
-                                             .firstName("Golden")
-                                             .lastName("Boy")
-                                             .contacts(new String[]{"091sdfa23950244", "rigosarasfdmiento4@gmial.com"})
-                                             .verified(true)
-                                             .password("test")
-                                             .email("test@test.com")
-                                             .build());
-    House save = this.houseRepository.save(House.builder()
-                                               .coverPic("http://localhost:8080/api/images/MTQxIC0gZ2pKRHVOby5qcGdyaWdvc2FybWllbnRv.jpg")
-                                               .title("Super Summit Rice Gardens")
-                                               .propertyType("House")
-                                               .amenities(new String[]{"Air Conditioning"})
-                                               .street("43 Street")
-                                               .slots(4)
-                                               .city("Kuala City")
-                                               .state("Gonging")
-                                               .average(5.0)
-                                               .country("Malaysia")
-                                               .price(4000L)
-                                               .description(rice)
-                                               .houseReviews(new ArrayList<>())
-                                               .build());
-    House save2 = this.houseRepository.save(House.builder()
-                                                .coverPic("http://localhost:8080/api/images/1.jpg")
-                                                .title("Syke")
-                                                .propertyType("Apartment")
-                                                .amenities(new String[]{"Air-Conditioning"})
-                                                .street("123 Spotify")
-                                                .city("City ")
-                                                .slots(3)
-                                                .state("Depression")
-                                                .average(0.0)
-                                                .country("Country road")
-                                                .price(4000L)
-                                                .description("bishu bashi bishu bashi")
-                                                .houseReviews(new ArrayList<>())
-                                                .build());
-    HouseReview review1 = new HouseReview(save.getId(), 5.0, nasi);
-    save.addReview(review1);
-    this.houseRepository.save(save);
-    HouseReview review2 = new HouseReview(save.getId(), 3.0, "");
-    this.houseUserRepository.save(new HouseUser(test.getId(), save.getId()));
-    this.houseUserRepository.save(new HouseUser(test.getId(), save2.getId()));
   }
 
   @GetMapping("/valid")
