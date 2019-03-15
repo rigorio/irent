@@ -1,5 +1,6 @@
 package rigor.io.irent.house;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,22 +33,49 @@ public class HouseController {
   private ReservationService reservationService;
   private ObjectMapper objectMapper = new ObjectMapper();
 
-  public HouseController(HouseRepository houseRepository, ReservationRepository reservationRepository, UserRepository userRepository, HouseUserRepository houseUserRepository, TokenService tokenService, ReservationService reservationService) {
+  public HouseController(HouseRepository houseRepository, ReservationRepository reservationRepository, UserRepository userRepository, HouseUserRepository houseUserRepository, TokenService tokenService, ReservationService reservationService) throws IOException {
     this.houseRepository = houseRepository;
     this.reservationRepository = reservationRepository;
     this.userRepository = userRepository;
     this.houseUserRepository = houseUserRepository;
     this.tokenService = tokenService;
     this.reservationService = reservationService;
-    User us = this.userRepository.save(User.builder()
-                                           .firstName("Chika")
-                                           .lastName("Fujiwara")
-                                           .profPic("http://localhost:8080/api/images/M192YTVDc09DLmpwZWdyaWdvc2FybWllbnRv.jpg")
-                                           .contacts(new String[]{"09123950244", "test@test.com"})
-                                           .verified(true)
-                                           .password("test")
-                                           .email("test@test.com")
-                                           .build());
+    Optional<User> byEmail = this.userRepository.findByEmail("test@test.com");
+    User user;
+    if (!byEmail.isPresent())
+      user = this.userRepository.save(User.builder()
+                                          .firstName("Chika")
+                                          .lastName("Fujiwara")
+                                          .profPic("http://localhost:8080/api/images/bmFuZGVtb25haS5QTkdDaGlrYUZ1aml3YXJh.PNG")
+                                          .contacts(new String[]{"09123950244", "test@test.com"})
+                                          .verified(true)
+                                          .password("test")
+                                          .email("test@test.com")
+                                          .build());
+    else
+      user = byEmail.get();
+//    List<House> houses = getHouses();
+//    houses = this.houseRepository.saveAll(houses);
+//    this.houseUserRepository.save(new HouseUser(user.getId(), houses.get(0).getId()));
+//    this.houseUserRepository.save(new HouseUser(user.getId(), houses.get(1).getId()));
+//
+//    Optional<User> byEmail1 = this.userRepository.findByEmail("test");
+//    User user1;
+//    if (!byEmail1.isPresent())
+//      user1 = this.userRepository.save(User.builder()
+//                                           .firstName("Rigo")
+//                                           .lastName("Sarmiento")
+//                                           .profPic("http://localhost:8080/api/images/1.jpg")
+//                                           .contacts(new String[]{"09123950244", "wala daw dapat email?"})
+//                                           .verified(true)
+//                                           .password("test")
+//                                           .email("test")
+//                                           .build());
+//    else
+//      user1 = byEmail.get();
+//    this.houseUserRepository.save(new HouseUser(user1.getId(), houses.get(2).getId()));
+
+
   }
 
   @GetMapping("/valid")
@@ -59,6 +87,148 @@ public class HouseController {
   public ResponseEntity<?> getAllHouses() {
     return new ResponseEntity<>(createMap("Success", houseRepository.findAll()), HttpStatus.OK);
   }
+
+  @GetMapping("/houses/highest")
+  public List<House> getLowest() {
+    List<House> houses = houseRepository.findAll().stream()
+        .filter(house -> house.getAverage() != null)
+        .collect(Collectors.toList());
+
+    List<House> highest = houses.stream()
+        .sorted((o2, o1) -> o1.getAverage().compareTo(o2.getAverage()))
+        .collect(Collectors.toList());
+    return highest;
+  }
+
+  @GetMapping("/houses/lowest")
+  public List<House> getHighest() {
+    List<House> houses = houseRepository.findAll().stream()
+        .filter(house -> house.getAverage() != null)
+        .collect(Collectors.toList());
+
+    List<House> lowest = houses.stream()
+        .sorted(Comparator.comparing(House::getAverage))
+        .collect(Collectors.toList());
+    return lowest;
+  }
+
+
+  @PostMapping("/houses/filter")
+  public ResponseEntity<?> filterHouses(@RequestParam(required = false) String order,
+                                        @RequestBody Map<String, Object> filters) throws IOException {
+    List<House> houses = houseRepository.findAll();
+    System.out.println(houses);
+    System.out.println("----------------------------");
+    System.out.println(filters);
+
+    if (filters.size() < 1)
+      return getAllHouses();
+
+    Object kw = filters.get("keyword");
+    String keyword = kw == null ? null : kw.toString();
+
+    Object pt = filters.get("propertyType");
+    String propertyType = pt == null ? null : pt.toString();
+
+    Object st = filters.get("sortedRating");
+    String sortedRating = st == null ? null : st.toString();
+
+    Object mnp = filters.get("minPrice");
+    Integer minPrice = mnp == null || mnp.toString().length() < 1 ? null : Integer.valueOf(mnp.toString());
+
+    Object mxp = filters.get("maxPrice");
+    Integer maxPrice = mxp == null || mxp.toString().length() < 1 ? null : Integer.valueOf(mxp.toString());
+
+    Object s = filters.get("slots");
+    Integer slots = s == null ? null : Integer.valueOf(s.toString());
+
+    Object r = filters.get("rating");
+    Double rating = r == null ? null : Double.valueOf(Integer.valueOf(r.toString()));
+
+    Object a = filters.get("amenities");
+    List<String> amenities = a == null ? null : (List<String>) a;
+
+//    List<String> amenities = (List) filters.get("amenities");
+
+    houses = sortedRating != null && sortedRating.equalsIgnoreCase("lowest")
+        ? getHighest()
+        : sortedRating != null && sortedRating.equalsIgnoreCase("highest")
+        ? getLowest()
+        : houses;
+
+
+    if (keyword != null) {
+      houses = houses.stream()
+          .filter(house ->
+                      cs(house.getTitle(), keyword) ||
+                          cs(house.getCity(), keyword) ||
+                          cs(house.getCountry(), keyword) ||
+                          cs(house.getState(), keyword) ||
+                          cs(house.getStreet(), keyword)
+
+                 )
+          .collect(Collectors.toList());
+    }
+
+    System.out.println("keyword");
+    System.out.println(houses);
+
+    if (propertyType != null)
+      houses = houses.stream()
+          .filter(house -> house.getPropertyType().equals(propertyType))
+          .collect(Collectors.toList());
+
+    System.out.println("propertyType");
+    System.out.println(houses);
+
+
+    if (slots != null)
+      houses = houses.stream()
+          .filter(house -> house.getSlots() >= slots)
+          .collect(Collectors.toList());
+
+    System.out.println("slots");
+    System.out.println(houses);
+
+    if (rating != null)
+      houses = houses.stream()
+          .filter(house -> {
+                    Double average = house.getAverage();
+                    return average != null && average >= rating;
+                  }
+                 )
+          .collect(Collectors.toList());
+
+
+    houses = houses.stream()
+        .filter(house -> {
+          Integer minP = minPrice;
+          if (minP == null)
+            minP = 0;
+          Integer maxP = maxPrice;
+          if (maxP == null)
+            maxP = Integer.MAX_VALUE;
+
+          return house.getPrice() >= minP && house.getPrice() <= maxP;
+        })
+        .collect(Collectors.toList());
+
+    if (amenities != null) {
+      for (String amenity : amenities) {
+        houses = houses.stream()
+            .filter(house -> Arrays.asList(house.getAmenities()).contains(amenity))
+            .collect(Collectors.toList());
+      }
+    }
+
+
+    return new ResponseEntity<>(new ResponseMessage("Success", houses), HttpStatus.OK);
+  }
+
+  private boolean cs(String x, String y) {
+    return x.toLowerCase().contains(y.toLowerCase());
+  }
+
 
   @GetMapping("/houses/{id}")
   public ResponseEntity<?> getHouseById(@PathVariable Long id) {
@@ -264,13 +434,62 @@ public class HouseController {
     }};
   }
 
-  private String rice = "Rice is the seed of the grass species Oryza sativa (Asian rice) or Oryza glaberrima (African rice)." +
-      " As a cereal grain, it is the most widely consumed staple food for a large part of the world's human population," +
-      " especially in Asia. It is the agricultural commodity with the third-highest worldwide production (rice, 741.5 million " +
-      "tonnes in 2014), after sugarcane (1.9 billion tonnes) and maize (1.0 billion tonnes)";
+  public List<House> getHouses() throws IOException {
+    ObjectMapper mapper = new ObjectMapper();
+    List<House> houses = mapper.readValue(bale, new TypeReference<List<House>>() {});
+    return houses;
+  }
 
-  private String nasi = "Cooked, unenriched, white, long-grained rice is composed of 68% water, 28% carbohydrates, " +
-      "3% protein, and negligible fat (table). In a 100 gram serving, it provides 130 calories and contains no micronutrients" +
-      " in significant amounts, with all less than 10% of the Daily Value (DV) (table).";
+  private String bale = "[\n" +
+      "\t{\n" +
+      "\t    \"id\": 66,\n" +
+      "\t    \"coverPic\": \"http://localhost:8080/api/images/M192YTVDc09DLmpwZWdDaGlrYUZ1aml3YXJh.jpeg\",\n" +
+      "\t    \"title\": \"dreamy\",\n" +
+      "\t    \"propertyType\": \"Rooms\",\n" +
+      "\t    \"amenities\": [],\n" +
+      "\t    \"street\": \"street\",\n" +
+      "\t    \"city\": \"city\",\n" +
+      "\t    \"state\": \"state\",\n" +
+      "\t    \"country\": \"country\",\n" +
+      "\t    \"price\": 4500,\n" +
+      "\t    \"description\": \"desc\",\n" +
+      "\t    \"slots\": 4,\n" +
+      "\t    \"average\": 3,\n" +
+      "\t    \"houseReviews\": []\n" +
+      "\t},\n" +
+      "\t{\n" +
+      "\t    \"id\": 68,\n" +
+      "\t    \"coverPic\": \"http://localhost:8080/api/images/bmFuZGVtb25haS5QTkdDaGlrYUZ1aml3YXJh.PNG\",\n" +
+      "\t    \"title\": \"moonbae\",\n" +
+      "\t    \"propertyType\": \"Rooms\",\n" +
+      "\t    \"amenities\": [],\n" +
+      "\t    \"street\": \"country\",\n" +
+      "\t    \"city\": \"siti\",\n" +
+      "\t    \"state\": \"stayt\",\n" +
+      "\t    \"country\": \"street\",\n" +
+      "\t    \"price\": 3000,\n" +
+      "\t    \"description\": \"desc\",\n" +
+      "\t    \"slots\": 5,\n" +
+      "\t    \"average\": 3.5,\n" +
+      "\t    \"houseReviews\": []\n" +
+      "\t},\n" +
+      "\t{\n" +
+      "\t    \"id\": 70,\n" +
+      "\t    \"coverPic\": \"http://localhost:8080/api/images/Y2hvaS5QTkdDaGlrYUZ1aml3YXJh.PNG\",\n" +
+      "\t    \"title\": \"choi dal dal\",\n" +
+      "\t    \"propertyType\": \"Apartment\",\n" +
+      "\t    \"amenities\": [],\n" +
+      "\t    \"street\": \"stret\",\n" +
+      "\t    \"city\": \"kete\",\n" +
+      "\t    \"state\": \"stet\",\n" +
+      "\t    \"country\": \"kantry\",\n" +
+      "\t    \"price\": 500,\n" +
+      "\t    \"description\": \"dsec\",\n" +
+      "\t    \"slots\": 6,\n" +
+      "\t    \"average\": 1,\n" +
+      "\t    \"houseReviews\": []\n" +
+      "\t}\n" +
+      "]";
+
 
 }
