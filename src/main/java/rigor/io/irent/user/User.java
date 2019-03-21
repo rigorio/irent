@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Null;
 import java.util.Arrays;
 
 @Entity
@@ -25,9 +26,20 @@ public class User {
   private String email;
   private String firstName;
   private String lastName;
+  @Nullable
+  private String location;
   private String password;
   private String[] contacts;
   private boolean verified;
+
+  @Nullable
+  public String getLocation() {
+    return location;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
+  }
 
   @Nullable
   public String getProfPic() {

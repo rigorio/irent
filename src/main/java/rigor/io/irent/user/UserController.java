@@ -101,6 +101,7 @@ public class UserController {
 
     String firstName = (String) data.get("firstName");
     String lastName = (String) data.get("lastName");
+    String location = (String) data.get("location");
     String email = (String) data.get("email");
     String profPic = (String) data.get("profPic");
     List<String> contacts = (List) data.get("contacts");
@@ -110,6 +111,7 @@ public class UserController {
     user.setProfPic(profPic);
     user.setFirstName(firstName);
     user.setLastName(lastName);
+    user.setLocation(location);
     user.setEmail(email);
     user.setContacts(contacts.toArray(new String[0]));
 
@@ -140,24 +142,6 @@ public class UserController {
     User savedUser = userRepository.save(user);
 
     return new ResponseEntity<>(new ResponseMessage("Success", "Password was changed"), HttpStatus.OK);
-  }
-
-  @GetMapping("/confirmation")
-  public ResponseEntity<?> confirmation(@RequestParam String code) {
-
-    String email = new String(Base64.getDecoder().decode(code));
-    Optional<User> userCon = userRepository.findByEmail(email);
-
-    if (!userCon.isPresent())
-      return new ResponseEntity<>(new ResponseMessage("Failed", "There was a problem with your verification"), HttpStatus.OK);
-
-    User user = userCon.get();
-    if (user.isVerified())
-      return new ResponseEntity<>(new ResponseMessage("Already Verified", "Email has already been verified"), HttpStatus.OK);
-
-    user.setVerified(true);
-    User u = userRepository.save(user);
-    return new ResponseEntity<>(new ResponseMessage("Success", "User successfully verified. Please login to the app to use"), HttpStatus.OK);
   }
 
   @GetMapping("/logout")

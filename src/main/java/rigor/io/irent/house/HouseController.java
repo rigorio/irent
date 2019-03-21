@@ -54,26 +54,26 @@ public class HouseController {
                                           .build());
     else
       user = byEmail.get();
-//    List<House> houses = getHouses();
-//    houses = this.houseRepository.saveAll(houses);
-//    this.houseUserRepository.save(new HouseUser(user.getId(), houses.get(0).getId()));
-//    this.houseUserRepository.save(new HouseUser(user.getId(), houses.get(1).getId()));
-//
-//    Optional<User> byEmail1 = this.userRepository.findByEmail("test");
-//    User user1;
-//    if (!byEmail1.isPresent())
-//      user1 = this.userRepository.save(User.builder()
-//                                           .firstName("Rigo")
-//                                           .lastName("Sarmiento")
-//                                           .profPic("http://localhost:8080/api/images/1.jpg")
-//                                           .contacts(new String[]{"09123950244", "wala daw dapat email?"})
-//                                           .verified(true)
-//                                           .password("test")
-//                                           .email("test")
-//                                           .build());
-//    else
-//      user1 = byEmail.get();
-//    this.houseUserRepository.save(new HouseUser(user1.getId(), houses.get(2).getId()));
+    List<House> houses = getHouses();
+    houses = this.houseRepository.saveAll(houses);
+    this.houseUserRepository.save(new HouseUser(user.getId(), houses.get(0).getId()));
+    this.houseUserRepository.save(new HouseUser(user.getId(), houses.get(1).getId()));
+
+    Optional<User> byEmail1 = this.userRepository.findByEmail("test");
+    User user1;
+    if (!byEmail1.isPresent())
+      user1 = this.userRepository.save(User.builder()
+                                           .firstName("Rigo")
+                                           .lastName("Sarmiento")
+                                           .profPic("http://localhost:8080/api/images/1.jpg")
+                                           .contacts(new String[]{"09123950244", "wala daw dapat email?"})
+                                           .verified(true)
+                                           .password("test")
+                                           .email("test")
+                                           .build());
+    else
+      user1 = byEmail.get();
+    this.houseUserRepository.save(new HouseUser(user1.getId(), houses.get(2).getId()));
 
 
   }
